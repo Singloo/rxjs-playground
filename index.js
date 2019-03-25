@@ -4,11 +4,11 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Monday March 25th 2019 8:16:01 am
+ * Last Modified: Monday March 25th 2019 2:40:04 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
-const { from, of, Subject } = require('rxjs');
+const { from, of, Subject, merge } = require('rxjs');
 const {
   switchMap,
   concatMap,
@@ -17,6 +17,7 @@ const {
   map,
   mergeAll,
   mapTo,
+  mergeMap,
 } = require('rxjs/operators');
 const normalPromise = () => new Promise(resolve => setTimeout(resolve, 1000));
 const normalRejectPromise = () =>
@@ -24,13 +25,13 @@ const normalRejectPromise = () =>
 
 of(1)
   .pipe(
-    switchMap(x => {
+    mergeMap(x => {
       const next = [];
-      next.push(of({}));
-      next.push(of({}));
+      next.push(of({a:1}));
+      next.push(of({b:1}));
       next.push(from(normalPromise()).pipe(map(_ => 'cccc')));
-      return next;
+      return merge(...next);
     }),
-    mergeAll(),
+    // mergeAll(),
   )
   .subscribe(x => console.warn('ne0', x));
