@@ -4,11 +4,11 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Monday March 25th 2019 2:40:04 pm
+ * Last Modified: Monday March 25th 2019 2:46:12 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
-const { from, of, Subject, merge } = require('rxjs');
+const { from, of, Subject, merge, forkJoin } = require('rxjs');
 const {
   switchMap,
   concatMap,
@@ -19,19 +19,28 @@ const {
   mapTo,
   mergeMap,
 } = require('rxjs/operators');
-const normalPromise = () => new Promise(resolve => setTimeout(resolve, 1000));
-const normalRejectPromise = () =>
-  new Promise((resolve, reject) => setTimeout(reject, 100));
+const randomNumber = (n, m) => {
+  const c = m - n + 1;
+  return parseInt(Math.random() * c + n, 10);
+};
+const normalPromise = v =>
+  new Promise(resolve =>
+    setTimeout(() => resolve(v || 'resolve'), randomNumber(500, 1000)),
+  );
+const normalRejectPromise = v =>
+  new Promise((resolve, reject) => setTimeout(() => reject('reject'), 100));
+const LOG = log => (...logs) => console.log(log, ...logs);
+const SUBSCRIBE = (next, complete, error) => ({
+  next: next || LOG('next'),
+  error: error || LOG('error'),
+  complete: complete || LOG('complete'),
+});
 
-of(1)
-  .pipe(
-    mergeMap(x => {
-      const next = [];
-      next.push(of({a:1}));
-      next.push(of({b:1}));
-      next.push(from(normalPromise()).pipe(map(_ => 'cccc')));
-      return merge(...next);
-    }),
-    // mergeAll(),
-  )
-  .subscribe(x => console.warn('ne0', x));
+const arrOfPromises = [
+  normalPromise('1'),
+  normalPromise('2'),
+  normalPromise('3'),
+  normalPromise('4'),
+];
+
+forkJoin(arrOfPromises).subscribe(SUBSCRIBE());
