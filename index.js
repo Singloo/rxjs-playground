@@ -4,11 +4,11 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Monday March 25th 2019 2:53:26 pm
+ * Last Modified: Monday March 25th 2019 3:04:12 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
-const { from, of, Subject, merge, forkJoin, race } = require('rxjs');
+const { from, of, Subject, merge, forkJoin, race, concat } = require('rxjs');
 const {
   switchMap,
   concatMap,
@@ -18,6 +18,8 @@ const {
   mergeAll,
   mapTo,
   mergeMap,
+  multicast,
+  share,
 } = require('rxjs/operators');
 const randomNumber = (n, m) => {
   const c = m - n + 1;
@@ -42,5 +44,10 @@ const arrOfPromises = [
   normalPromise('3'),
   normalPromise('4'),
 ];
-
-race(...arrOfPromises).subscribe(SUBSCRIBE());
+const source = concat(...arrOfPromises).pipe(
+  tap(() => console.warn('side effect')),
+);
+const multi = source.pipe(multicast(() => new Subject()));
+source.subscribe(SUBSCRIBE(x => console.warn('11', x)));
+source.subscribe(SUBSCRIBE(x => console.warn('22', x)));
+source.pipe(share());
