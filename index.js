@@ -4,11 +4,20 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday March 27th 2019 12:03:22 pm
+ * Last Modified: Wednesday March 27th 2019 2:05:35 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
-const { from, of, Subject, merge, forkJoin, race, concat } = require('rxjs');
+const {
+  from,
+  of,
+  Subject,
+  merge,
+  forkJoin,
+  race,
+  concat,
+  zip,
+} = require('rxjs');
 const {
   switchMap,
   concatMap,
@@ -27,7 +36,7 @@ const randomNumber = (n, m) => {
   const c = m - n + 1;
   return parseInt(Math.random() * c + n, 10);
 };
-const normalPromise = v => () =>
+const normalPromise = v =>
   new Promise(resolve =>
     setTimeout(() => resolve(v || 'resolve'), randomNumber(500, 3000)),
   );
@@ -40,23 +49,11 @@ const SUBSCRIBE = (next, complete, error) => ({
   complete: complete || LOG('complete'),
 });
 
-const arrOfPromises = [];
-for (let i = 0; i < 100; i++) {
-  arrOfPromises.push(normalPromise(i + 1));
-}
-console.warn(arrOfPromises.length);
-from(arrOfPromises)
-  .pipe(
-    bufferCount(10),
-    concatMap(arr => {
-      console.warn('arr');
-      return merge(...arr.map(x => x())).pipe(toArray());
-    }),
-    tap(x => console.log('tap', x)),
-  )
-  .subscribe({
-    // next: x => console.warn('nxt'),
-    complete: () => {
-      console.warn('compelte');
-    },
-  });
+// const arrOfPromises = [];
+// for (let i = 0; i < 100; i++) {
+//   arrOfPromises.push(normalPromise(i + 1));
+// }
+// console.warn(arrOfPromises.length);
+
+zip(normalPromise(1), normalPromise(2)).subscribe(x => console.warn(x));
+forkJoin(normalPromise(1), normalPromise(2)).subscribe(x => console.warn(x));
