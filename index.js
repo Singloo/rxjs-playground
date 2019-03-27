@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday March 27th 2019 2:05:35 pm
+ * Last Modified: Wednesday March 27th 2019 2:58:01 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -17,6 +17,8 @@ const {
   race,
   concat,
   zip,
+  interval,
+  timer,
 } = require('rxjs');
 const {
   switchMap,
@@ -31,6 +33,7 @@ const {
   share,
   bufferCount,
   toArray,
+  take,
 } = require('rxjs/operators');
 const randomNumber = (n, m) => {
   const c = m - n + 1;
@@ -54,6 +57,9 @@ const SUBSCRIBE = (next, complete, error) => ({
 //   arrOfPromises.push(normalPromise(i + 1));
 // }
 // console.warn(arrOfPromises.length);
-
-zip(normalPromise(1), normalPromise(2)).subscribe(x => console.warn(x));
-forkJoin(normalPromise(1), normalPromise(2)).subscribe(x => console.warn(x));
+const source1 = interval(1000);
+const source2 = interval(2000);
+zip(source1, source2).subscribe(x => console.warn('zip', x));
+forkJoin(source1.pipe(take(2)), source2.pipe(take(2))).subscribe(x =>
+  console.warn('forkJoin', x),
+);
