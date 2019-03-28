@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday March 27th 2019 3:27:55 pm
+ * Last Modified: Thursday March 28th 2019 1:01:12 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -39,7 +39,7 @@ const randomNumber = (n, m) => {
   const c = m - n + 1;
   return parseInt(Math.random() * c + n, 10);
 };
-const normalPromise = v =>
+const normalPromise = v => () =>
   new Promise(resolve =>
     setTimeout(() => resolve(v || 'resolve'), randomNumber(500, 1000)),
   );
@@ -52,13 +52,16 @@ const SUBSCRIBE = (next, complete, error) => ({
   complete: complete || LOG('complete'),
 });
 
-// const arrOfPromises = [];
-// for (let i = 0; i < 100; i++) {
-//   arrOfPromises.push(normalPromise(i + 1));
-// }
-// console.warn(arrOfPromises.length);
+const arrOfPromises = [];
+for (let i = 0; i < 100; i++) {
+  arrOfPromises.push(normalPromise(i + 1));
+}
+console.warn(arrOfPromises.length);
 const source1 = interval(1000);
 const source2 = interval(2000);
-of(1)
-  .pipe(switchMap(_ => normalPromise(555)))
+from(arrOfPromises)
+  .pipe(
+    bufferCount(5),
+    concatMap(promss => merge(...promss.map(o => o())).pipe(toArray())),
+  )
   .subscribe(x => console.warn(x));
