@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday April 10th 2019 12:06:40 pm
+ * Last Modified: Wednesday April 10th 2019 12:09:52 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -62,10 +62,14 @@ const source2 = interval(2000);
 let time = Date.now();
 source1
   .pipe(
+    // tap(x => {
+    //   console.warn(Date.now() - time);
+    //   time = Date.now();
+    // }),
+    concatMap(x => normalPromise(x + 1)),
     tap(x => {
       console.warn(Date.now() - time);
       time = Date.now();
     }),
-    concatMap(x => normalPromise(x + 1)),
   )
   .subscribe(SUBSCRIBE());
