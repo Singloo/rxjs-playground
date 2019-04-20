@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Thursday April 18th 2019 2:56:31 pm
+ * Last Modified: Saturday April 20th 2019 7:07:53 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -35,6 +35,7 @@ const {
   bufferCount,
   toArray,
   take,
+  filter,
 } = require('rxjs/operators');
 const randomNumber = (n, m) => {
   const c = m - n + 1;
@@ -46,10 +47,12 @@ const normalPromise = v =>
   );
 const normalCurryingPromise = v => () =>
   new Promise(resolve =>
-    setTimeout(() => resolve(v || 'resolve'), randomNumber(500, 1000)),
+    setTimeout(() => resolve(v || 'resolve'), randomNumber(800, 1500)),
   );
-const normalRejectPromise = v =>
-  new Promise((resolve, reject) => setTimeout(() => reject('reject'), 100));
+const normalRejectPromise = v => () =>
+  new Promise((resolve, reject) =>
+    setTimeout(() => reject(v || 'reject'), randomNumber(800, 1500)),
+  );
 const LOG = log => (...logs) => console.log(log, ...logs);
 const SUBSCRIBE = (next, complete, error) => ({
   next: next || LOG('next'),
@@ -57,13 +60,32 @@ const SUBSCRIBE = (next, complete, error) => ({
   complete: complete || LOG('complete'),
 });
 const arrOfPromises = [];
+for (let i = 0; i < 10; i++) {
+  if (Math.random() > 0.7) {
+    arrOfPromises.push(normalRejectPromise(i));
+  } else {
+    arrOfPromises.push(normalCurryingPromise(i));
+  }
+}
 const source1 = interval(1000);
 const source2 = interval(2000);
 let time = Date.now();
 source1
   .pipe(
-    switchMap(() => {
-      return throwError('errrrr');
+    take(arrOfPromises.length),
+    concatMap(i =>
+      from(arrOfPromises[i]()).pipe(
+        catchError(err => {
+          console.warn('err', err);
+          return of(null);
+        }),
+      ),
+    ),
+    tap(n => {
+      console.warn(n, Date.now() - time);
+      time = Date.now();
     }),
+    filter(n => n !== null),
+    toArray(),
   )
   .subscribe(SUBSCRIBE());
