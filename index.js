@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Saturday April 20th 2019 7:07:53 pm
+ * Last Modified: Monday April 22nd 2019 12:45:08 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -70,22 +70,7 @@ for (let i = 0; i < 10; i++) {
 const source1 = interval(1000);
 const source2 = interval(2000);
 let time = Date.now();
-source1
-  .pipe(
-    take(arrOfPromises.length),
-    concatMap(i =>
-      from(arrOfPromises[i]()).pipe(
-        catchError(err => {
-          console.warn('err', err);
-          return of(null);
-        }),
-      ),
-    ),
-    tap(n => {
-      console.warn(n, Date.now() - time);
-      time = Date.now();
-    }),
-    filter(n => n !== null),
-    toArray(),
-  )
-  .subscribe(SUBSCRIBE());
+merge(
+  normalPromise(2),
+  new Promise(resolve => setTimeout(() => resolve(), randomNumber(800, 2000))),
+).subscribe(SUBSCRIBE());
