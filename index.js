@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Monday April 22nd 2019 12:45:08 pm
+ * Last Modified: Monday April 22nd 2019 12:49:05 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -36,6 +36,7 @@ const {
   toArray,
   take,
   filter,
+  pluck,
 } = require('rxjs/operators');
 const randomNumber = (n, m) => {
   const c = m - n + 1;
@@ -70,7 +71,6 @@ for (let i = 0; i < 10; i++) {
 const source1 = interval(1000);
 const source2 = interval(2000);
 let time = Date.now();
-merge(
-  normalPromise(2),
-  new Promise(resolve => setTimeout(() => resolve(), randomNumber(800, 2000))),
-).subscribe(SUBSCRIBE());
+of([1, 23, 4, 5, 6])
+  .pipe(pluck('[0]'))
+  .subscribe(SUBSCRIBE());
