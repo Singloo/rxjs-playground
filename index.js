@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Monday April 22nd 2019 12:49:05 pm
+ * Last Modified: Friday April 26th 2019 10:36:09 am
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -22,6 +22,10 @@ const {
   throwError,
 } = require('rxjs');
 const {
+  throttle,
+  throttleTime,
+  debounceTime,
+  debounce,
   switchMap,
   concatMap,
   tap,
@@ -71,6 +75,15 @@ for (let i = 0; i < 10; i++) {
 const source1 = interval(1000);
 const source2 = interval(2000);
 let time = Date.now();
-of([1, 23, 4, 5, 6])
-  .pipe(pluck('[0]'))
-  .subscribe(SUBSCRIBE());
+source1
+  .pipe(
+    take(3),
+    throttleTime(1500),
+  )
+  .subscribe(x => console.warn('t' + x));
+source1
+  .pipe(
+    take(3),
+    debounceTime(1500),
+  )
+  .subscribe(x => console.warn('d' + x));
