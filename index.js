@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Friday May 17th 2019 10:46:58 am
+ * Last Modified: Wednesday May 22nd 2019 1:26:23 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -76,16 +76,22 @@ for (let i = 0; i < 10; i++) {
     arrOfPromises.push(normalCurryingPromise(i));
   }
 }
-from([1, 2, 3, 4, 5, 6])
-  .pipe(
-    concatMap(o => of(o).pipe(delay(800 + randomNumber(100, 500)))),
-    TAP(),
-    switchMap((o, index) => {
-      return of(o).pipe(delay(1000));
-    }),
-    TAP(),
-  )
-  .subscribe(SUBSCRIBE());
+// from([1, 2, 3, 4, 5, 6])
+//   .pipe(
+//     concatMap(o => of(o).pipe(delay(800 + randomNumber(100, 500)))),
+//     TAP(),
+//     switchMap((o, index) => {
+//       return of(o).pipe(delay(1000));
+//     }),
+//     TAP(),
+//   )
+//   .subscribe(SUBSCRIBE());
 
 // subjct.subscribe(SUBSCRIBE());
-from([1, 2, 3, 4, 5, 6]).subscribe(subjct);
+of(1)
+  .pipe(
+    tap(x => console.warn('aaa')),
+    delay(5000),
+    tap(x => console.warn('aaa')),
+  )
+  .subscribe(SUBSCRIBE());
