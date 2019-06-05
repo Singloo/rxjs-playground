@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday June 5th 2019 5:02:44 pm
+ * Last Modified: Wednesday June 5th 2019 5:05:12 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -95,6 +95,6 @@ of(1)
       if (d !== 1) return of(2);
       return empty();
     }),
-    map(x => 2 * x),
+    switchMap(x => of(2 * x)),
   )
   .subscribe(SUBSCRIBE());
