@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday May 22nd 2019 1:26:23 pm
+ * Last Modified: Wednesday June 5th 2019 5:02:44 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -20,6 +20,7 @@ const {
   interval,
   timer,
   throwError,
+  empty,
 } = require('rxjs');
 const {
   throttle,
@@ -90,8 +91,10 @@ for (let i = 0; i < 10; i++) {
 // subjct.subscribe(SUBSCRIBE());
 of(1)
   .pipe(
-    tap(x => console.warn('aaa')),
-    delay(5000),
-    tap(x => console.warn('aaa')),
+    switchMap(d => {
+      if (d !== 1) return of(2);
+      return empty();
+    }),
+    map(x => 2 * x),
   )
   .subscribe(SUBSCRIBE());
