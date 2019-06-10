@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Thursday June 6th 2019 1:07:59 pm
+ * Last Modified: Monday June 10th 2019 2:12:24 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -89,9 +89,6 @@ for (let i = 0; i < 10; i++) {
 //   .subscribe(SUBSCRIBE());
 
 // subjct.subscribe(SUBSCRIBE());
-const obs1 = merge(normalPromise(2), normalPromise(3)).pipe(
-  toArray(),
-  map(([v1, v2]) => [v1 > 2, v2 > 2]),
-);
-
-from(obs1).subscribe(SUBSCRIBE());
+from([1,2,3,4,5,6,7,8,9,10]).pipe(
+  switchMap(x=>x%2===0?empty():of(x))
+).subscribe(SUBSCRIBE());
