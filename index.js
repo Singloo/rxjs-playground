@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Monday June 10th 2019 2:12:24 pm
+ * Last Modified: Monday June 10th 2019 3:20:53 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -89,6 +89,20 @@ for (let i = 0; i < 10; i++) {
 //   .subscribe(SUBSCRIBE());
 
 // subjct.subscribe(SUBSCRIBE());
-from([1,2,3,4,5,6,7,8,9,10]).pipe(
-  switchMap(x=>x%2===0?empty():of(x))
-).subscribe(SUBSCRIBE());
+// from([1,2,3,4,5,6,7,8,9,10]).pipe(
+//   switchMap(x=>x%2===0?empty():of(x))
+// ).subscribe(SUBSCRIBE());
+from([1, 2, 3, 4, 5, 6, 7, 8])
+  .pipe(
+    bufferCount(2),
+    concatMap(nums =>
+      concat(
+        ...nums.map(num =>
+          from(normalPromise(num)).pipe(
+            switchMap(n => ( normalPromise(n))),
+          ),
+        ),
+      ).pipe(toArray()),
+    ),
+  )
+  .subscribe(SUBSCRIBE());
