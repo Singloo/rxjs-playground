@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday June 19th 2019 2:44:16 pm
+ * Last Modified: Wednesday July 3rd 2019 12:32:20 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -64,6 +64,15 @@ const normalRejectPromise = v => () =>
     setTimeout(() => reject(v || 'reject'), randomNumber(800, 1500)),
   );
 const LOG = log => (...logs) => console.log(log, ...logs);
+let START;
+const LOG_TIME = (...logs) => {
+  if (!START) {
+    START = Date.now();
+    console.log(...logs);
+  } else {
+    console.log(((Date.now() - START) / 1000).toFixed(2) + 's ', ...logs);
+  }
+};
 const SUBSCRIBE = (next, complete, error) => ({
   next: next || LOG('next'),
   error: error || LOG('error'),
@@ -71,32 +80,29 @@ const SUBSCRIBE = (next, complete, error) => ({
 });
 const arrOfPromises = [];
 for (let i = 0; i < 10; i++) {
-  if (Math.random() > 0.7) {
-    arrOfPromises.push(normalRejectPromise(i));
-  } else {
-    arrOfPromises.push(normalCurryingPromise(i));
-  }
+  // if (Math.random() > 0.7) {
+  // arrOfPromises.push(normalRejectPromise(i));
+  // } else {
+  arrOfPromises.push(normalCurryingPromise(i));
+  // }
 }
-// from([1, 2, 3, 4, 5, 6])
-//   .pipe(
-//     concatMap(o => of(o).pipe(delay(800 + randomNumber(100, 500)))),
-//     TAP(),
-//     switchMap((o, index) => {
-//       return of(o).pipe(delay(1000));
-//     }),
-//     TAP(),
-//   )
-//   .subscribe(SUBSCRIBE());
 
-// subjct.subscribe(SUBSCRIBE());
-// from([1,2,3,4,5,6,7,8,9,10]).pipe(
-//   switchMap(x=>x%2===0?empty():of(x))
-// ).subscribe(SUBSCRIBE());
-let sub 
-sub = from([1, 2, 3, 4, 5, 6, 7, 8])
-  .subscribe((x)=>{
-    console.log(x)
-    console.log(sub)
-  },undefined,()=>{
-    console.log(sub)
-  });
+LOG_TIME('start');
+of(arrOfPromises)
+  .pipe(
+    switchMap(arrs =>
+      merge(
+        ...arrs.map((prms, idx) =>
+          from(prms()).pipe(
+            map(v => ({
+              v,
+              idx,
+            })),
+          ),
+        ),
+      ),
+    ),
+    // toArray(),
+    // map(res => res.sort((a, b) => a.idx - b.idx)),
+  )
+  .subscribe(SUBSCRIBE(undefined, () => LOG_TIME('end')));
