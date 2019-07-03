@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday July 3rd 2019 12:36:38 pm
+ * Last Modified: Wednesday July 3rd 2019 3:26:47 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -21,6 +21,7 @@ const {
   timer,
   throwError,
   empty,
+  range,
 } = require('rxjs');
 const {
   throttle,
@@ -45,6 +46,8 @@ const {
   delay,
   startWith,
   concatAll,
+  takeUntil,
+  takeWhile,
 } = require('rxjs/operators');
 const subjct = new Subject();
 const TAP = (x = '') => tap(n => console.log(x + n));
@@ -88,28 +91,14 @@ for (let i = 0; i < 10; i++) {
   // }
 }
 
-LOG_TIME('start');
-merge(
-  ...arrOfPromises.map((prms, idx) =>
-    from(prms()).pipe(
-      map(v => ({
-        v,
-        idx,
-      })),
-    ),
-  ),
-)
+const sub = range(5)
   .pipe(
-    // mergeMap((prms, idx) =>
-    //   from(prms()).pipe(
-    //     map(v => ({
-    //       v,
-    //       idx,
-    //     })),
-    //   ),
-    // ),
-    // concatAll(),
-    toArray(),
-    // map(res => res.sort((a, b) => a.idx - b.idx)),
+    takeWhile(x => x < 3),
+    switchMap(x => {
+      if (x === 3) {
+        sub && sub.unsubscribe();
+      }
+      return of(x);
+    }),
   )
-  .subscribe(SUBSCRIBE(undefined, () => LOG_TIME('end')));
+  .subscribe(SUBSCRIBE());
