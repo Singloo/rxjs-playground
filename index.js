@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday July 3rd 2019 3:26:47 pm
+ * Last Modified: Wednesday July 3rd 2019 3:44:15 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -94,11 +94,8 @@ for (let i = 0; i < 10; i++) {
 const sub = range(5)
   .pipe(
     takeWhile(x => x < 3),
-    switchMap(x => {
-      if (x === 3) {
-        sub && sub.unsubscribe();
-      }
-      return of(x);
-    }),
+    // switchMap(x => {
+    //   return of(x);
+    // }),
   )
   .subscribe(SUBSCRIBE());
