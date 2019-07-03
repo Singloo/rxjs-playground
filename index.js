@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday July 3rd 2019 12:32:20 pm
+ * Last Modified: Wednesday July 3rd 2019 12:36:38 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -44,6 +44,7 @@ const {
   pluck,
   delay,
   startWith,
+  concatAll,
 } = require('rxjs/operators');
 const subjct = new Subject();
 const TAP = (x = '') => tap(n => console.log(x + n));
@@ -88,21 +89,27 @@ for (let i = 0; i < 10; i++) {
 }
 
 LOG_TIME('start');
-of(arrOfPromises)
-  .pipe(
-    switchMap(arrs =>
-      merge(
-        ...arrs.map((prms, idx) =>
-          from(prms()).pipe(
-            map(v => ({
-              v,
-              idx,
-            })),
-          ),
-        ),
-      ),
+merge(
+  ...arrOfPromises.map((prms, idx) =>
+    from(prms()).pipe(
+      map(v => ({
+        v,
+        idx,
+      })),
     ),
-    // toArray(),
+  ),
+)
+  .pipe(
+    // mergeMap((prms, idx) =>
+    //   from(prms()).pipe(
+    //     map(v => ({
+    //       v,
+    //       idx,
+    //     })),
+    //   ),
+    // ),
+    // concatAll(),
+    toArray(),
     // map(res => res.sort((a, b) => a.idx - b.idx)),
   )
   .subscribe(SUBSCRIBE(undefined, () => LOG_TIME('end')));
