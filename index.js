@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Wednesday July 3rd 2019 3:44:15 pm
+ * Last Modified: Thursday July 4th 2019 4:04:34 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -91,11 +91,13 @@ for (let i = 0; i < 10; i++) {
   // }
 }
 
-const sub = range(5)
-  .pipe(
-    takeWhile(x => x < 3),
-    // switchMap(x => {
-    //   return of(x);
-    // }),
-  )
-  .subscribe(SUBSCRIBE());
+const a = normalCurryingPromise(123);
+const b = normalRejectPromise(3421);
+
+const main = async () => {
+  const aa = await a().catch(() => null);
+  const bb = await b().catch(() => null);
+  console.log(aa, bb);
+};
+
+main()
