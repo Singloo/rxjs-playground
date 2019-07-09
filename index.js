@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Tuesday July 9th 2019 12:36:41 pm
+ * Last Modified: Tuesday July 9th 2019 12:40:26 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -95,15 +95,18 @@ from([1, 2, 3, 4, 5])
   .pipe(
     bufferCount(2),
     TAP(),
-    concatMap(nums => merge(...nums.map((x, idx) => of(x).pipe(delay(1000))))),
-    // concatAll(),
-    // undefined
-    false
-      ? toArray()
-      : _ => {
-          console.log(_);
-          return _;
-        },
+    _ => {
+      console.log(_);
+      return _;
+    },
+    concatMap(nums =>
+      merge(...nums.map((x, idx) => of(x).pipe(delay(1000)))).pipe(toArray()),
+    ),
+    _ => {
+      console.log(_);
+      return _;
+    },
+
     // concatMap(nums =>
     //   from(nums.map((x, idx) => of(x).pipe(delay(1000)))).pipe(
     //     mergeAll(),
