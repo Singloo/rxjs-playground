@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Tuesday July 9th 2019 12:59:01 pm
+ * Last Modified: Tuesday July 9th 2019 1:14:35 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -91,8 +91,14 @@ for (let i = 0; i < 10; i++) {
   // }
 }
 
-forkJoin(
-  of(1).pipe(delay(5000)),
-  of(2).pipe(delay(100)),
-  // throwError(';aaaa'),
-).subscribe(SUBSCRIBE());
+interval(500)
+  .pipe(
+    map(val =>
+      interval(10).pipe(
+        delay(1000),
+        take(3),
+      ),
+    ),
+    mergeAll(1),
+  )
+  .subscribe(SUBSCRIBE());
