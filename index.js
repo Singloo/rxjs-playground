@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Tuesday July 9th 2019 1:14:35 pm
+ * Last Modified: Thursday July 11th 2019 2:57:58 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -83,7 +83,7 @@ const SUBSCRIBE = (next, complete, error) => ({
   complete: complete || LOG('complete'),
 });
 const arrOfPromises = [];
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 50; i++) {
   // if (Math.random() > 0.7) {
   // arrOfPromises.push(normalRejectPromise(i));
   // } else {
@@ -91,14 +91,12 @@ for (let i = 0; i < 10; i++) {
   // }
 }
 
-interval(500)
+from(arrOfPromises)
   .pipe(
-    map(val =>
-      interval(10).pipe(
-        delay(1000),
-        take(3),
-      ),
-    ),
-    mergeAll(1),
+    bufferCount(5),
+    concatMap(val => forkJoin(...val.map(o => o()))),
+    tap(x => console.log(x)),
+    toArray(),
+    map(x=>x.flat())
   )
   .subscribe(SUBSCRIBE());
