@@ -4,7 +4,7 @@
  * Created Date: Thursday March 21st 2019
  * Author: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
- * Last Modified: Thursday July 11th 2019 2:57:58 pm
+ * Last Modified: Thursday July 11th 2019 3:20:44 pm
  * Modified By: Rick yang tongxue(🍔🍔) (origami@timvel.com)
  * -----
  */
@@ -91,12 +91,9 @@ for (let i = 0; i < 50; i++) {
   // }
 }
 
-from(arrOfPromises)
-  .pipe(
-    bufferCount(5),
-    concatMap(val => forkJoin(...val.map(o => o()))),
-    tap(x => console.log(x)),
-    toArray(),
-    map(x=>x.flat())
-  )
-  .subscribe(SUBSCRIBE());
+const source = from(normalPromise(2));
+
+setTimeout(() => {
+  console.log('1')
+  source.subscribe(SUBSCRIBE());
+}, 1000);
