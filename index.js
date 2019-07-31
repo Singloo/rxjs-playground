@@ -48,52 +48,56 @@ const {
   concatAll,
   takeUntil,
   takeWhile,
+  repeatWhen,
+  repeat,
 } = require('rxjs/operators');
 const subjct = new Subject();
-const TAP = (x = '') => tap(n => console.log(x + n));
+const TAP = (x = '') => tap(n => console.log(x, n));
 const randomNumber = (n, m) => {
   const c = m - n + 1;
-  return parseInt(Math.random() * c + n, 10);
+  return Math.floor(Math.random() * c + n);
 };
-const normalPromise = v =>
+const normalPromise = (v, time) =>
   new Promise(resolve =>
-    setTimeout(() => resolve(v || 'resolve'), randomNumber(800, 2000)),
+    setTimeout(() => resolve(v), time || randomNumber(800, 2000)),
   );
-const normalCurryingPromise = v => () =>
+const normalCurryingPromise = (v, time) => () =>
   new Promise(resolve =>
-    setTimeout(() => resolve(v || 'resolve'), randomNumber(800, 1500)),
+    setTimeout(() => resolve(v), time || randomNumber(800, 1500)),
   );
-const normalRejectPromise = v => () =>
+const normalRejectPromise = (v, time) =>
   new Promise((resolve, reject) =>
-    setTimeout(() => reject(v || 'reject'), randomNumber(800, 1500)),
+    setTimeout(() => reject(v), time || randomNumber(800, 1500)),
+  );
+const normalCurryingRejectPromise = (v, time) => () =>
+  new Promise((resolve, reject) =>
+    setTimeout(() => reject(v), time || randomNumber(800, 1500)),
   );
 const LOG = log => (...logs) => console.log(log, ...logs);
 let START;
 const LOG_TIME = (...logs) => {
   if (!START) {
     START = Date.now();
-    console.log(...logs);
+    console.log('start', ...logs);
   } else {
     console.log(((Date.now() - START) / 1000).toFixed(2) + 's ', ...logs);
   }
 };
 const SUBSCRIBE = (next, complete, error) => ({
-  next: next || LOG('next'),
-  error: error || LOG('error'),
-  complete: complete || LOG('complete'),
+  next: next || LOG('NEXT'),
+  error: error || LOG('ERROR'),
+  complete:
+    complete ||
+    function() {
+      console.log('COMPLETE');
+    },
 });
-const arrOfPromises = [];
-for (let i = 0; i < 50; i++) {
-  // if (Math.random() > 0.7) {
-  // arrOfPromises.push(normalRejectPromise(i));
-  // } else {
-  arrOfPromises.push(normalCurryingPromise(i));
-  // }
-}
-
-const source = from(normalPromise(2));
-
-setTimeout(() => {
-  console.log('1')
-  source.subscribe(SUBSCRIBE());
-}, 1000);
+let d = 0;
+range(0, 28)
+  .pipe(
+    tap(x => {
+      console.log(d);
+      d += x;
+    }),
+  )
+  .subscribe(SUBSCRIBE());
