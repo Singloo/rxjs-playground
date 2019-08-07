@@ -92,12 +92,16 @@ const SUBSCRIBE = (next, complete, error) => ({
       console.log('COMPLETE');
     },
 });
-let d = 0;
-range(0, 28)
+const arr = [];
+for (let i = 0; i < 50; i++) {
+  arr.push(normalPromise(i));
+}
+LOG_TIME('start');
+range(0, 50)
   .pipe(
-    tap(x => {
-      console.log(d);
-      d += x;
-    }),
+    map(x => timer(1000)),
+    mergeAll(5),
   )
-  .subscribe(SUBSCRIBE());
+  .subscribe({
+    complete: () => LOG_TIME('end'),
+  });
