@@ -93,7 +93,12 @@ const SUBSCRIBE = (next, complete, error) => ({
     },
 });
 
-race(
-  timer(500).pipe(tap(() => console.log('timer'))),
-  from(normalPromise(5, 400)).pipe(switchMap(() => empty())),
-).subscribe(SUBSCRIBE());
+timer(500)
+  .pipe(
+    catchError(err => {
+      console.warn('cathed', err);
+      return empty();
+    }),
+    switchMap(() => normalRejectPromise(1)),
+  )
+  .subscribe(SUBSCRIBE());
