@@ -93,7 +93,7 @@ const SUBSCRIBE = (next, complete, error) => ({
     },
 });
 
-timer(500)
+from(normalRejectPromise(500))
   .pipe(
     catchError(err => {
       console.warn('cathed', err);
